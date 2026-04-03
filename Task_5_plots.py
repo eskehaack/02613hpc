@@ -28,8 +28,7 @@ plt.figure(figsize=(8,5))
 plt.plot(
     df["workers"],
     df["speedup"],
-    marker="o",
-    label="Measured speed-up"
+    marker="o"
 )
 
 
