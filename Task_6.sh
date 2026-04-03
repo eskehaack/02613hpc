@@ -2,7 +2,7 @@
 
 #BSUB -J task6_dynamic
 #BSUB -q hpc
-#BSUB -n 8
+#BSUB -n 16
 #BSUB -R "span[hosts=1]"
 #BSUB -W 03:00
 
@@ -11,8 +11,8 @@
 #BSUB -e task6_dynamic.err
 
 # Memory requirements
-#BSUB -R "rusage[mem=8GB]"
-#BSUB -M 8GB
+#BSUB -R "rusage[mem=1GB]"
+#BSUB -M 1GB
 
 # Same CPU model for fair timings
 #BSUB -R "select[model == XeonGold6226R]"
@@ -27,7 +27,7 @@ echo "=================================="
 echo "Running simulations"
 echo "=================================="
 
-for workers in 1 2 4 8
+for workers in 1 2 4 8 16
 do
     echo "Running N=${N}, workers=${workers}"
 

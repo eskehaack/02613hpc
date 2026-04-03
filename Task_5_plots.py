@@ -1,6 +1,7 @@
 import glob
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 # find all timing files
 files = sorted(glob.glob("timing_*.csv"))
@@ -45,7 +46,7 @@ ax.set_ylabel("Speed-up")
 # cleaner axes
 ax.set_xticks(df["workers"])
 ax.set_xlim(df["workers"].min(), df["workers"].max())
-ax.set_ylim(0, 5)
+ax.set_ylim(0, int(np.ceil(df["speedup"].max())))
 
 # light grid
 ax.grid(True, linestyle="--", alpha=0.4)

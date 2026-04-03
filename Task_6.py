@@ -79,7 +79,7 @@ if __name__ == "__main__":
     start_time = time.perf_counter()
 
     with Pool(processes=n_workers) as pool:
-        results = pool.map(process_building, building_ids, chunksize=5)
+        results = pool.map(process_building, building_ids, chunksize=1)
 
     end_time = time.perf_counter()
     elapsed = end_time - start_time
