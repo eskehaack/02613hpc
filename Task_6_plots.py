@@ -38,7 +38,7 @@ ax.plot(
 )
 
 # labels and title
-ax.set_title("Parallel speed-up for static scheduling", pad=12)
+ax.set_title("Parallel speed-up for dynamic scheduling", pad=12)
 ax.set_xlabel("Number of workers")
 ax.set_ylabel("Speed-up")
 
@@ -60,5 +60,5 @@ for x, y in zip(df["workers"], df["speedup"]):
 
 fig.tight_layout()
 
-plt.savefig("speedup_static_dyn.png", dpi=300, bbox_inches="tight")
+plt.savefig("speedup_dynamic.png", dpi=300, bbox_inches="tight")
 plt.show()
