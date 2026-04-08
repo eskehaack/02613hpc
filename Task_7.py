@@ -55,16 +55,23 @@ def summary_stats(u, interior_mask):
 if __name__ == '__main__':
     # Load data
     LOAD_DIR = '/dtu/projects/02613_2025/data/modified_swiss_dwellings/'
-    # Load building ids first (usually tiny cost, but include if reference does)
     with open(join(LOAD_DIR, 'building_ids.txt'), 'r') as f:
         building_ids = f.read().splitlines()
 
+    if len(sys.argv) < 2:
+        N = 1
+    else:
+        N = int(sys.argv[1])
     building_ids = building_ids[:N]
+
+
+    # Load building ids first (usually tiny cost, but include if reference does)
+
 
     MAX_ITER = 20_000
     ABS_TOL = 1e-4
 
-    # Optional: warm up on dummy data so compilation is excluded
+    # warm up on dummy data so compilation is excluded
     dummy_u = np.zeros((514, 514))
     dummy_mask = np.zeros((512, 512), dtype=np.bool_)
     jacobi_jit(dummy_u, dummy_mask, 1, ABS_TOL)
