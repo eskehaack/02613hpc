@@ -18,7 +18,7 @@
 #BSUB -R "select[model == XeonGold6226R]"
 
 source /dtu/projects/02613_2025/conda/conda_init.sh
-conda activate 02613
+conda activate 02613_2026
 
 # Number of floorplans
 N=100
