@@ -1,0 +1,100 @@
+building_id, mean_temp, std_temp, pct_above_18, pct_below_15
+10000, 14.01233878811275, 6.367431059312565, 30.941014791508444, 55.542295034537624
+10009, 11.000135812436373, 5.811144379826625, 16.6712734948236, 74.9723590310584
+10014, 14.744169941950119, 7.037733284673848, 38.26367541377415, 52.80837116508215
+10019, 14.735524480624482, 7.030325006703675, 38.14915412864569, 52.92926826787113
+10029, 10.616037322820358, 6.317331938274926, 18.25563221896085, 74.51301795448481
+10031, 12.507072852890545, 6.278432089100354, 24.044722033998173, 66.39513301711693
+10051, 13.289039951277402, 5.999085063388632, 25.97693550756574, 62.859923608050536
+10053, 11.366493551285709, 6.26121798185875, 19.9510754583921, 72.41052538787024
+10056, 14.220114507861702, 6.179461157398302, 31.763454814173965, 57.06174975667784
+10064, 12.71696893739585, 6.964227784263683, 28.79137124461432, 62.75688345539249
+Wrote profile results to simulate_4.py.lprof
+Timer unit: 1e-06 s
+
+Total time: 90.368 s
+File: simulate_4.py
+Function: jacobi at line 18
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    18                                           @profile # Task 4
+    19                                           def jacobi(u, interior_mask, max_iter, atol=1e-6):
+    20        10       5849.8    585.0      0.0      u = np.copy(u)
+    21                                           
+    22     47282      32739.7      0.7      0.0      for i in range(max_iter):
+    23                                                   # Compute average of left, right, up and down neighbors, see eq. (1)
+    24     47282   52781686.7   1116.3     58.4          u_new = 0.25 * (u[1:-1, :-2] + u[1:-1, 2:] + u[:-2, 1:-1] + u[2:, 1:-1])
+    25     47282    9199336.6    194.6     10.2          u_new_interior = u_new[interior_mask]
+    26     47282   18721710.4    396.0     20.7          delta = np.abs(u[1:-1, 1:-1][interior_mask] - u_new_interior).max()
+    27     47282    9538554.3    201.7     10.6          u[1:-1, 1:-1][interior_mask] = u_new_interior
+    28                                           
+    29     47282      88115.4      1.9      0.1          if delta < atol:
+    30        10          6.8      0.7      0.0              break
+    31        10          2.8      0.3      0.0      return u
+
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@hpc.dtu.dk>
+Subject: Job 28090586: <jacobi_profile> in cluster <dcc> Done
+
+Job <jacobi_profile> was submitted from host <n-62-27-22> by user <s214704> in cluster <dcc> at Mon Mar 23 18:02:17 2026
+Job was executed on host(s) <8*n-62-11-61>, in queue <hpc>, as user <s214704> in cluster <dcc> at Mon Mar 23 18:02:19 2026
+</zhome/87/1/168411> was used as the home directory.
+</zhome/87/1/168411/Desktop/pHPC/project> was used as the working directory.
+Started at Mon Mar 23 18:02:19 2026
+Terminated at Mon Mar 23 18:03:51 2026
+Results reported at Mon Mar 23 18:03:51 2026
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/bash
+#BSUB -J jacobi_profile
+#BSUB -q hpc
+
+#BSUB -n 8
+#BSUB -R "span[hosts=1]"
+#BSUB -W 01:00
+
+#BSUB -o jacobi_profile.out
+#BSUB -e jacobi_profile.err
+
+#BSUB -R "rusage[mem=16GB]"
+#BSUB -M 16GB
+
+#BSUB -R "select[model == XeonGold6226R]"
+
+source /dtu/projects/02613_2025/conda/conda_init.sh
+conda activate 02613
+
+cd /zhome/87/1/168411/Desktop/pHPC/project/
+
+python -m kernprof -l -v simulate_4.py 10
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   92.33 sec.
+    Max Memory :                                 78 MB
+    Average Memory :                             73.67 MB
+    Total Requested Memory :                     131072.00 MB
+    Delta Memory :                               130994.00 MB
+    Max Swap :                                   -
+    Max Processes :                              4
+    Max Threads :                                5
+    Run time :                                   92 sec.
+    Turnaround time :                            94 sec.
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <jacobi_profile.err> for stderr output of this job.
+
