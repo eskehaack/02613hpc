@@ -34,6 +34,7 @@ def jacobi_jit(u, interior_mask, max_iter, atol=1e-6):
 
         if delta < atol:
             break
+
     return u
 
 
@@ -54,33 +55,34 @@ def summary_stats(u, interior_mask):
 if __name__ == '__main__':
     # Load data
     LOAD_DIR = '/dtu/projects/02613_2025/data/modified_swiss_dwellings/'
+    # Load building ids first (usually tiny cost, but include if reference does)
     with open(join(LOAD_DIR, 'building_ids.txt'), 'r') as f:
         building_ids = f.read().splitlines()
 
-    if len(sys.argv) < 2:
-        N = 1
-    else:
-        N = int(sys.argv[1])
     building_ids = building_ids[:N]
+
+    MAX_ITER = 20_000
+    ABS_TOL = 1e-4
+
+    # Optional: warm up on dummy data so compilation is excluded
+    dummy_u = np.zeros((514, 514))
+    dummy_mask = np.zeros((512, 512), dtype=np.bool_)
+    jacobi_jit(dummy_u, dummy_mask, 1, ABS_TOL)
 
     start_time = time.perf_counter()
 
     # Load floor plans
     all_u0 = np.empty((N, 514, 514))
-    all_interior_mask = np.empty((N, 512, 512), dtype='bool')
+    all_interior_mask = np.empty((N, 512, 512), dtype=bool)
     for i, bid in enumerate(building_ids):
         u0, interior_mask = load_data(LOAD_DIR, bid)
         all_u0[i] = u0
         all_interior_mask[i] = interior_mask
 
-    # Run jacobi iterations for each floor plan
-    MAX_ITER = 20_000
-    ABS_TOL = 1e-4
-
+    # Run jacobi
     all_u = np.empty_like(all_u0)
     for i, (u0, interior_mask) in enumerate(zip(all_u0, all_interior_mask)):
-        u = jacobi_jit(u0, interior_mask, MAX_ITER, ABS_TOL)
-        all_u[i] = u
+        all_u[i] = jacobi_jit(u0, interior_mask, MAX_ITER, ABS_TOL)
 
     end_time = time.perf_counter()
     elapsed = end_time - start_time
