@@ -64,10 +64,6 @@ if __name__ == '__main__':
         N = int(sys.argv[1])
     building_ids = building_ids[:N]
 
-
-    # Load building ids first (usually tiny cost, but include if reference does)
-
-
     MAX_ITER = 20_000
     ABS_TOL = 1e-4
 
