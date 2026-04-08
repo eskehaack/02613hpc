@@ -15,14 +15,22 @@ def load_data(load_dir, bid):
 
 @jit(nopython=True)
 def jacobi_jit(u, interior_mask, max_iter, atol=1e-6):
-    u = np.copy(u)
+    u = u.copy()
+    ny, nx = interior_mask.shape
 
-    for i in range(max_iter):
-        # Compute average of left, right, up and down neighbors, see eq. (1)
+    for _ in range(max_iter):
+        delta = 0.0
         u_new = 0.25 * (u[1:-1, :-2] + u[1:-1, 2:] + u[:-2, 1:-1] + u[2:, 1:-1])
-        u_new_interior = u_new[interior_mask]
-        delta = np.abs(u[1:-1, 1:-1][interior_mask] - u_new_interior).max()
-        u[1:-1, 1:-1][interior_mask] = u_new_interior
+
+        for i in range(ny):
+            for j in range(nx):
+                if interior_mask[i, j]:
+                    old_val = u[i + 1, j + 1]
+                    new_val = u_new[i, j]
+                    diff = abs(old_val - new_val)
+                    if diff > delta:
+                        delta = diff
+                    u[i + 1, j + 1] = new_val
 
         if delta < atol:
             break
@@ -85,7 +93,7 @@ if __name__ == '__main__':
         print(f"{bid},", ", ".join(str(stats[k]) for k in stat_keys))
 
     # Save timing results (append to file)
-    timing_file = f"timing_jitcpu.csv"
+    timing_file = "timing_jitcpu.csv"
 
     with open(timing_file, "w") as f:
         f.write("N,elapsed_seconds\n")
