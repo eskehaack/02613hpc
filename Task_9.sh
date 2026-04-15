@@ -3,15 +3,15 @@
 #BSUB -J CuPy_solution
 #BSUB -q c02613
 
-#BSUB -n 8
+#BSUB -n 4
 #BSUB -R "span[hosts=1]"
-#BSUB -W 01:00
+#BSUB -W 00:30
 
 #BSUB -o CuPy_solution.out
 #BSUB -e CuPy_solution.err
 
-#BSUB -R "rusage[mem=16GB]"
-#BSUB -M 16GB
+#BSUB -R "rusage[mem=1GB]"
+#BSUB -M 1GB
 
 #BSUB -R "select[model == XeonGold6226R]"
 
