@@ -13,6 +13,7 @@ def load_data(load_dir, bid):
     interior_mask = np.load(join(load_dir, f"{bid}_interior.npy"))
     return u, interior_mask
 
+
 @jit(nopython=True)
 def jacobi_jit(u, interior_mask, max_iter, atol=1e-6):
     u = u.copy()
@@ -45,17 +46,17 @@ def summary_stats(u, interior_mask):
     pct_above_18 = np.sum(u_interior > 18) / u_interior.size * 100
     pct_below_15 = np.sum(u_interior < 15) / u_interior.size * 100
     return {
-        'mean_temp': mean_temp,
-        'std_temp': std_temp,
-        'pct_above_18': pct_above_18,
-        'pct_below_15': pct_below_15,
+        "mean_temp": mean_temp,
+        "std_temp": std_temp,
+        "pct_above_18": pct_above_18,
+        "pct_below_15": pct_below_15,
     }
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Load data
-    LOAD_DIR = '/dtu/projects/02613_2025/data/modified_swiss_dwellings/'
-    with open(join(LOAD_DIR, 'building_ids.txt'), 'r') as f:
+    LOAD_DIR = "/dtu/projects/02613_2025/data/modified_swiss_dwellings/"
+    with open(join(LOAD_DIR, "building_ids.txt"), "r") as f:
         building_ids = f.read().splitlines()
 
     if len(sys.argv) < 2:
@@ -91,14 +92,14 @@ if __name__ == '__main__':
     elapsed = end_time - start_time
 
     # Print summary statistics in CSV format
-    stat_keys = ['mean_temp', 'std_temp', 'pct_above_18', 'pct_below_15']
-    print('building_id, ' + ', '.join(stat_keys))  # CSV header
+    stat_keys = ["mean_temp", "std_temp", "pct_above_18", "pct_below_15"]
+    print("building_id, " + ", ".join(stat_keys))  # CSV header
     for bid, u, interior_mask in zip(building_ids, all_u, all_interior_mask):
         stats = summary_stats(u, interior_mask)
         print(f"{bid},", ", ".join(str(stats[k]) for k in stat_keys))
 
     # Save timing results (append to file)
-    timing_file = f"timing_jitcpu.csv"
+    timing_file = "task7_timing.csv"
 
     with open(timing_file, "a") as f:
         f.write(f"{N},{elapsed:.4f}\n")

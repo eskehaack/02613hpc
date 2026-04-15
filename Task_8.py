@@ -96,9 +96,8 @@ if __name__ == "__main__":
         print(f"{bid},", ", ".join(str(stats[k]) for k in stat_keys))
 
     # Save timing results (append to file)
-    timing_file = f"timing_jitcuda.csv"
+    timing_file = "task8_timing.csv"
 
-    with open(timing_file, "w") as f:
-        f.write("N,elapsed_seconds\n")
+    with open(timing_file, "a") as f:
         f.write(f"{N},{elapsed:.4f}\n")
     print(f"Saved timing to {timing_file}")
