@@ -27,15 +27,18 @@ def jacobi_kernel(interior_mask, u, u_new):
             + u[idx[0] + 1, idx[1]]
         )
         u[idx] = u_new[idx]
-    return u
 
 
-def jacobi_cuda(u, interior_mask, max_iter):
+def jacobi_cuda(u, interior_mask, max_iter, atol=1e-6):
     u = np.copy(u)
 
     for i in range(max_iter):
         u_new = np.copy(u)
         jacobi_kernel[1, len(interior_mask)](interior_mask, u, u_new)
+        delta = np.max(np.abs(u - u_new))
+
+        if delta < atol:
+            break
 
     return u
 
