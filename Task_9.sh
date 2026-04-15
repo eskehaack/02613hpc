@@ -1,6 +1,7 @@
 #!/bin/bash
+
 #BSUB -J CuPy_solution
-#BSUB -q hpc
+#BSUB -q c02613
 
 #BSUB -n 8
 #BSUB -R "span[hosts=1]"
@@ -13,6 +14,8 @@
 #BSUB -M 16GB
 
 #BSUB -R "select[model == XeonGold6226R]"
+
+#BSUB -gpu "num=1:mode=exclusive_process"
 
 source /dtu/projects/02613_2025/conda/conda_init.sh
 conda activate 02613_2026
