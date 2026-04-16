@@ -17,25 +17,29 @@ def load_data(load_dir, bid):
 @cuda.jit()
 def jacobi_kernel(interior_mask, u, u_new):
     # single iteration of jacobi method, to be called from GPU
-    i = cuda.grid(1)
-    if i < len(interior_mask):
-        idx = interior_mask[i]
-        u_new[idx] = 0.25 * (
-            u[idx[0], idx[1] - 1]
-            + u[idx[0], idx[1] + 1]
-            + u[idx[0] - 1, idx[1]]
-            + u[idx[0] + 1, idx[1]]
-        )
-        u[idx] = u_new[idx]
+    i, j = cuda.grid(2)
+    ui, uj = i + 1, j + 1
+    if i < interior_mask.shape[0] and j < interior_mask.shape[1]:
+        if interior_mask[i, j]:
+            u_new[ui, uj] = 0.25 * (
+                u[ui, uj - 1] + u[ui, uj + 1] + u[ui - 1, uj] + u[ui + 1, uj]
+            )
 
 
 def jacobi_cuda(u, interior_mask, max_iter, atol=1e-6):
     u = np.copy(u)
 
+    threads_per_block = (16, 16)
+
+    ny, nx = interior_mask.shape
+    blocks_per_grid = ((ny + 15) // 16, (nx + 15) // 16)
+
     for i in range(max_iter):
         u_new = np.copy(u)
-        jacobi_kernel[1, len(interior_mask)](interior_mask, u, u_new)
+        jacobi_kernel[blocks_per_grid, threads_per_block](interior_mask, u, u_new)
         delta = np.max(np.abs(u - u_new))
+
+        u = u_new
 
         if delta < atol:
             break
