@@ -1,15 +1,9 @@
 from os.path import join
 import sys
 
-import numpy as np
-import cupy as cp
-
-# 9. Adapt the reference solution to run on the GPU using CuPy.
-    # a) Run and time the new solution for a small subset of floorplans. How does the performance
-    # compare to the reference?
-    # b) How long would it now take to process all floorplans?
-    # c) Was anything surprising about the performance?
-
+# import numpy as np
+import cupy as cp 
+import time
 
 def load_data(load_dir, bid):
     SIZE = 512
@@ -29,7 +23,7 @@ def jacobi(u, interior_mask, max_iter, atol=1e-6):
         delta = cp.abs(u[1:-1, 1:-1][interior_mask] - u_new_interior).max()
         u[1:-1, 1:-1][interior_mask] = u_new_interior
 
-        if delta < atol:
+        if delta.item() < atol:
             break
     return u
 
@@ -60,9 +54,12 @@ if __name__ == '__main__':
         N = int(sys.argv[1])
     building_ids = building_ids[:N]
 
+    # Time the execution
+    start = time.perf_counter()
+
     # Load floor plans
-    all_u0 = np.empty((N, 514, 514))
-    all_interior_mask = np.empty((N, 512, 512), dtype='bool')
+    all_u0 = cp.empty((N, 514, 514))
+    all_interior_mask = cp.empty((N, 512, 512), dtype='bool')
     for i, bid in enumerate(building_ids):
         u0, interior_mask = load_data(LOAD_DIR, bid)
         all_u0[i] = u0
@@ -72,10 +69,15 @@ if __name__ == '__main__':
     MAX_ITER = 20_000
     ABS_TOL = 1e-4
 
-    all_u = np.empty_like(all_u0)
+    all_u = cp.empty_like(all_u0)
     for i, (u0, interior_mask) in enumerate(zip(all_u0, all_interior_mask)):
         u = jacobi(u0, interior_mask, MAX_ITER, ABS_TOL)
         all_u[i] = u
+
+    # Ensure all GPU computations are finished before stopping the timer
+    cp.cuda.Stream.null.synchronize()
+    end = time.perf_counter()
+    print(f"Elapsed time: {end - start:.6f} s", file=sys.stderr)
 
     # Print summary statistics in CSV format
     stat_keys = ['mean_temp', 'std_temp', 'pct_above_18', 'pct_below_15']

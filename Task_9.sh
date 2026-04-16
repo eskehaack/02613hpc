@@ -27,5 +27,5 @@ do
     echo "Running with n_floorplans = $n"
     echo "======================================"
 
-    /usr/bin/time -v python -m kernprof -l -v Task_9.py $n
+    /usr/bin/time -v python Task_9.py $n
 done
