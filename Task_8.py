@@ -30,6 +30,7 @@ def jacobi_cuda(u, interior_mask, max_iter):
     u = np.copy(u)
     du = cuda.to_device(u)
     du_new = cuda.to_device(u.copy())
+    d_interior_mask = cuda.to_device(interior_mask)
 
     threads_per_block = (16, 16)
 
@@ -38,7 +39,7 @@ def jacobi_cuda(u, interior_mask, max_iter):
 
     for i in range(max_iter):
         du, du_new = du_new, du
-        jacobi_kernel[blocks_per_grid, threads_per_block](interior_mask, du, du_new)
+        jacobi_kernel[blocks_per_grid, threads_per_block](d_interior_mask, du, du_new)
 
     return du.copy_to_host()
 
