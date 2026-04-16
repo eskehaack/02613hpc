@@ -26,8 +26,10 @@ def jacobi_kernel(interior_mask, u, u_new):
             )
 
 
-def jacobi_cuda(u, interior_mask, max_iter, atol=1e-6):
+def jacobi_cuda(u, interior_mask, max_iter):
     u = np.copy(u)
+    du = cuda.to_device(u)
+    du_new = cuda.to_device(u.copy())
 
     threads_per_block = (16, 16)
 
@@ -35,16 +37,10 @@ def jacobi_cuda(u, interior_mask, max_iter, atol=1e-6):
     blocks_per_grid = ((ny + 15) // 16, (nx + 15) // 16)
 
     for i in range(max_iter):
-        u_new = np.copy(u)
-        jacobi_kernel[blocks_per_grid, threads_per_block](interior_mask, u, u_new)
-        delta = np.max(np.abs(u - u_new))
+        du, du_new = du_new, du
+        jacobi_kernel[blocks_per_grid, threads_per_block](interior_mask, du, du_new)
 
-        u = u_new
-
-        if delta < atol:
-            break
-
-    return u
+    return du.copy_to_host()
 
 
 def summary_stats(u, interior_mask):
@@ -89,7 +85,7 @@ if __name__ == "__main__":
 
     all_u = np.empty_like(all_u0)
     for i, (u0, interior_mask) in enumerate(zip(all_u0, all_interior_mask)):
-        u = jacobi_cuda(u0, interior_mask, MAX_ITER, ABS_TOL)
+        u = jacobi_cuda(u0, interior_mask, MAX_ITER)
         all_u[i] = u
 
     end_time = time.perf_counter()
