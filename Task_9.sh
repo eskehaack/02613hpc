@@ -13,8 +13,6 @@
 #BSUB -R "rusage[mem=1GB]"
 #BSUB -M 1GB
 
-#BSUB -R "select[model == XeonGold6226R]"
-
 #BSUB -gpu "num=1:mode=exclusive_process"
 
 source /dtu/projects/02613_2025/conda/conda_init.sh
