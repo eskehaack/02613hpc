@@ -13,10 +13,6 @@ def load_data(load_dir, bid):
     return u, interior_mask
 
 
-import cupy as cp
-
-import cupy as cp
-
 def jacobi_optimized(u, interior_mask, max_iter, atol=1e-6, check_interval=10):
     u = cp.copy(u)
     u_new = cp.copy(u)
