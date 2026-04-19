@@ -13,8 +13,6 @@
 #BSUB -R "rusage[mem=1GB]"
 #BSUB -M 1GB
 
-#BSUB -R "select[model == XeonGold6226R]"
-
 #BSUB -gpu "num=1:mode=exclusive_process"
 
 source /dtu/projects/02613_2025/conda/conda_init.sh
@@ -27,5 +25,5 @@ do
     echo "Running with n_floorplans = $n"
     echo "======================================"
 
-    /usr/bin/time -v python -m kernprof -l -v Task_9.py $n
+    /usr/bin/time -v python Task_9.py $n
 done
