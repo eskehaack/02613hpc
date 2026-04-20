@@ -23,20 +23,19 @@ def jacobi_optimized(u, interior_mask, max_iter, atol=1e-6, check_interval=10):
     left  = (slice(1, -1), slice(0, -2))
     right = (slice(1, -1), slice(2, None))
 
-    for i in range(max_iter):
-        u_new[:] = 0.25 * (
-            u[1:-1, :-2] +
-            u[1:-1, 2:] +
-            u[:-2, 1:-1] +
-            u[2:, 1:-1]
-        )
+    u_inner = u[inner]
+    u_new_inner = u_new[inner]
 
-        u[inner][interior_mask] = u_new[inner][interior_mask]
+    for i in range(max_iter):
+        u_new_inner[:] = 0.25 * (u[up] + u[down] + u[left] + u[right])
 
         if i % check_interval == 0:
-            delta = cp.abs(u_new[inner][interior_mask] - u[inner][interior_mask]).max()
+            delta = cp.abs(u_new_inner[interior_mask] - u_inner[interior_mask]).max()
             if delta.item() < atol:
+                u_inner[interior_mask] = u_new_inner[interior_mask]
                 break
+
+        u_inner[interior_mask] = u_new_inner[interior_mask]
                 
     return u
 
