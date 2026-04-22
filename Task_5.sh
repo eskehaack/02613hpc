@@ -43,4 +43,3 @@ echo "=================================="
 
 python Task_5_plots.py
 
-echo "Done"

@@ -42,5 +42,3 @@ echo "Generating speed-up plot"
 echo "=================================="
 
 python Task_6_plots.py
-
-echo "Done"
